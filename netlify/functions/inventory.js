@@ -1,4 +1,5 @@
 const { getStore } = require('@netlify/blobs');
+const { createRemoteJWKSet, jwtVerify } = require('jose');
 
 // Minimal schema validation
 function validateItem(item) {
@@ -24,6 +25,11 @@ function normalizeId(str = '') {
 const store = getStore({ name: 'inventory' });
 const KEY = 'inventory.json';
 
+const AUTH0_DOMAIN = process.env.AUTH0_DOMAIN;
+const AUTH0_AUDIENCE = process.env.AUTH0_AUDIENCE;
+const ISSUER = AUTH0_DOMAIN ? `https://${AUTH0_DOMAIN}/` : null;
+const JWKS = ISSUER ? createRemoteJWKSet(new URL(`${ISSUER}.well-known/jwks.json`)) : null;
+
 exports.handler = async (event) => {
   const method = event.httpMethod;
   if (method === 'OPTIONS') return { statusCode: 200, headers: corsHeaders() };
@@ -34,8 +40,15 @@ exports.handler = async (event) => {
 };
 
 async function handleGet(event) {
-  const isAuthed = Boolean(event.clientContext?.identity?.token);
-  const includeDrafts = isAuthed && event.queryStringParameters?.includeDrafts === '1';
+  let includeDrafts = false;
+  if (event.queryStringParameters?.includeDrafts === '1' && event.headers.authorization) {
+    try {
+      await verifyAuth(event.headers.authorization, 'inventory:read');
+      includeDrafts = true;
+    } catch (err) {
+      // ignore; will fall back to public view
+    }
+  }
   try {
     const raw = await store.get(KEY, { type: 'text' });
     if (!raw) return resp(200, [], { 'Cache-Control': 'no-cache' });
@@ -49,8 +62,11 @@ async function handleGet(event) {
 }
 
 async function handlePost(event) {
-  const isAuthed = Boolean(event.clientContext?.identity?.token);
-  if (!isAuthed) return resp(401, { error: 'Unauthorized' });
+  try {
+    await verifyAuth(event.headers.authorization, 'inventory:write');
+  } catch (err) {
+    return resp(err.status || 401, { error: err.message || 'Unauthorized' });
+  }
 
   let payload;
   try {
@@ -114,4 +130,37 @@ function resp(statusCode, body, extraHeaders = {}) {
     headers: corsHeaders(extraHeaders),
     body: JSON.stringify(body),
   };
+}
+
+async function verifyAuth(authHeader, scopeNeeded) {
+  if (!AUTH0_DOMAIN || !AUTH0_AUDIENCE) {
+    const err = new Error('Auth not configured');
+    err.status = 500;
+    throw err;
+  }
+  if (!authHeader || !authHeader.toLowerCase().startsWith('bearer ')) {
+    const err = new Error('Unauthorized');
+    err.status = 401;
+    throw err;
+  }
+  const token = authHeader.split(' ')[1];
+  try {
+    const { payload } = await jwtVerify(token, JWKS, {
+      issuer: ISSUER,
+      audience: AUTH0_AUDIENCE,
+    });
+    if (scopeNeeded) {
+      const scopes = (payload.scope || '').split(' ');
+      if (!scopes.includes(scopeNeeded)) {
+        const err = new Error('Forbidden: missing scope');
+        err.status = 403;
+        throw err;
+      }
+    }
+    return payload;
+  } catch (err) {
+    const e = new Error('Unauthorized');
+    e.status = 401;
+    throw e;
+  }
 }

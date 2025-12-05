@@ -1,0 +1,8 @@
+{
+  "name": "aftertone-vault",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "jose": "^5.2.0"
+  }
+}

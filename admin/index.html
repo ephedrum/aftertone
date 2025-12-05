@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400..900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+  <script src="https://cdn.auth0.com/js/auth0-spa-js/2.6/auth0-spa-js.production.js"></script>
   <style>
     :root { --bg: #0a0a0a; }
     body { background: var(--bg); color: #f6f6f6; }
@@ -48,7 +48,7 @@
         </div>
       </div>
 
-      <div id="authNotice" class="mt-4 text-amber-300 text-sm hidden">Log in to load and edit inventory.</div>
+      <div id="authNotice" class="mt-4 text-amber-300 text-sm hidden">Log in with Auth0 to load and edit inventory.</div>
       <div id="error" class="mt-3 text-red-400 text-sm hidden"></div>
 
       <div class="mt-6 grid md:grid-cols-3 gap-4">
@@ -95,6 +95,13 @@
   </main>
 
   <script>
+    const authConfig = {
+      domain: 'YOUR_AUTH0_DOMAIN', // e.g., your-tenant.us.auth0.com
+      clientId: 'YOUR_AUTH0_CLIENT_ID',
+      audience: 'YOUR_AUTH0_API_AUDIENCE', // e.g., https://aftertone-api
+    };
+    const redirectUri = `${window.location.origin}/admin`;
+
     const listEl = document.getElementById('list');
     const errorEl = document.getElementById('error');
     const authNotice = document.getElementById('authNotice');
@@ -119,16 +126,28 @@
       id: document.getElementById('fId'),
     };
 
+    let auth0Client = null;
     let token = null;
     let inventory = [];
 
-    netlifyIdentity.on('login', (user) => { token = user.token.access_token; syncAuthUI(); loadInventory(); netlifyIdentity.close(); });
-    netlifyIdentity.on('logout', () => { token = null; inventory = []; render(); syncAuthUI(); });
-    netlifyIdentity.on('init', (user) => { token = user?.token?.access_token || null; syncAuthUI(); if (token) loadInventory(); });
-    netlifyIdentity.init();
+    initAuth();
 
-    loginBtn.addEventListener('click', () => netlifyIdentity.open());
-    logoutBtn.addEventListener('click', () => netlifyIdentity.logout());
+    loginBtn.addEventListener('click', async () => {
+      if (!auth0Client) return showError('Auth not initialized');
+      await auth0Client.loginWithRedirect({
+        authorizationParams: {
+          redirect_uri: redirectUri,
+          audience: authConfig.audience,
+          scope: 'openid profile email inventory:read inventory:write',
+        },
+      });
+    });
+
+    logoutBtn.addEventListener('click', async () => {
+      if (!auth0Client) return;
+      await auth0Client.logout({ logoutParams: { returnTo: redirectUri } });
+    });
+
     refreshBtn.addEventListener('click', loadInventory);
     searchEl.addEventListener('input', render);
 
@@ -137,6 +156,7 @@
       if (!token) return showError('Log in to save.');
       const item = collectForm();
       try {
+        await ensureToken();
         const res = await fetch('/.netlify/functions/inventory', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
@@ -150,16 +170,56 @@
       } catch (err) { showError(err.message); }
     });
 
-    function syncAuthUI() {
-      const authed = Boolean(token);
-      loginBtn.classList.toggle('hidden', authed);
-      logoutBtn.classList.toggle('hidden', !authed);
-      authNotice.classList.toggle('hidden', authed);
+    async function initAuth() {
+      try {
+        auth0Client = await createAuth0Client({
+          domain: authConfig.domain,
+          clientId: authConfig.clientId,
+          audience: authConfig.audience,
+          authorizationParams: {
+            redirect_uri: redirectUri,
+            audience: authConfig.audience,
+            scope: 'openid profile email inventory:read inventory:write',
+          },
+          cacheLocation: 'localstorage',
+          useRefreshTokens: true,
+        });
+
+        if (window.location.search.includes('code=') && window.location.search.includes('state=')) {
+          await auth0Client.handleRedirectCallback();
+          window.history.replaceState({}, document.title, window.location.pathname);
+        }
+
+        const isAuth = await auth0Client.isAuthenticated();
+        if (isAuth) {
+          token = await auth0Client.getTokenSilently({
+            authorizationParams: {
+              audience: authConfig.audience,
+              scope: 'openid profile email inventory:read inventory:write',
+            },
+          });
+          await loadInventory();
+        }
+        syncAuthUI();
+      } catch (err) {
+        showError('Auth init failed: ' + err.message);
+      }
+    }
+
+    async function ensureToken() {
+      if (!auth0Client) return;
+      token = await auth0Client.getTokenSilently({
+        authorizationParams: {
+          audience: authConfig.audience,
+          scope: 'openid profile email inventory:read inventory:write',
+        },
+      });
     }
 
     async function loadInventory() {
-      if (!token) { render(); return; }
+      if (!auth0Client) { render(); return; }
       try {
+        await ensureToken();
         const res = await fetch('/.netlify/functions/inventory?includeDrafts=1', {
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -168,6 +228,13 @@
         inventory = data;
         render();
       } catch (err) { showError(err.message); }
+    }
+
+    function syncAuthUI() {
+      const authed = Boolean(token);
+      loginBtn.classList.toggle('hidden', authed);
+      logoutBtn.classList.toggle('hidden', !authed);
+      authNotice.classList.toggle('hidden', authed);
     }
 
     function render() {
