@@ -1,0 +1,95 @@
+[
+  {
+    "id": "fender-johnny-marr-jaguar-2022",
+    "make": "Fender",
+    "model": "Johnny Marr Jaguar",
+    "year": 2022,
+    "type": "Solidbody",
+    "finish": "Fever Dream Yellow",
+    "status": "Available",
+    "images": [
+      "/assets/images/fender-johnny-marr-jaguar-2022/1.jpg",
+      "/assets/images/fender-johnny-marr-jaguar-2022/2.jpg"
+    ],
+    "specs": {
+      "Scale": "25.5\"",
+      "Body": "Offset"
+    },
+    "blurb": "Amazing guitar, lush fever dream yellow limited edition.",
+    "price": 3000
+  },
+  {
+    "id": "g-l-doheny-bto-2024",
+    "make": "G&L",
+    "model": "Doheny BTO",
+    "year": 2024,
+    "type": "Solidbody",
+    "finish": "Orange Metal Flake",
+    "status": "Available",
+    "images": [
+      "/assets/images/g-l-doheny-bto-2024/1.jpg",
+      "/assets/images/g-l-doheny-bto-2024/2.jpg",
+      "/assets/images/g-l-doheny-bto-2024/3.jpg",
+      "/assets/images/g-l-doheny-bto-2024/4.jpg",
+      "/assets/images/g-l-doheny-bto-2024/5.jpg",
+      "/assets/images/g-l-doheny-bto-2024/6.jpg",
+      "/assets/images/g-l-doheny-bto-2024/7.jpg",
+      "/assets/images/g-l-doheny-bto-2024/8.jpg"
+    ],
+    "specs": {
+      "Scale": "25.5\"",
+      "Body": "Offset"
+    },
+    "blurb": "Amazing and unique G&L Doheny Built to Order in Orange Metal Flake, with ebony fretboard no inlays and locking tuners."
+  },
+  {
+    "id": "fender-jaguar-ultra-luxe-2022",
+    "make": "Fender",
+    "model": "Jaguar Ultra Luxe",
+    "year": 2022,
+    "type": "Solidbody",
+    "finish": "Texas Tea",
+    "status": "Available",
+    "images": [
+      "/assets/images/fender-jaguar-ultra-luxe-2022/1.jpg",
+      "/assets/images/fender-jaguar-ultra-luxe-2022/2.jpg",
+      "/assets/images/fender-jaguar-ultra-luxe-2022/3.jpg",
+      "/assets/images/fender-jaguar-ultra-luxe-2022/4.jpg",
+      "/assets/images/fender-jaguar-ultra-luxe-2022/5.jpg",
+      "/assets/images/fender-jaguar-ultra-luxe-2022/6.jpg",
+      "/assets/images/fender-jaguar-ultra-luxe-2022/7.jpg",
+      "/assets/images/fender-jaguar-ultra-luxe-2022/8.jpg"
+    ],
+    "specs": {
+      "Scale": "25.5\"",
+      "Body": "Offset"
+    },
+    "blurb": "For players who demand the ultimate in performance and tone, American Ultra is our most advanced series of guitars and basses. Celebrating the introduction of Fender's top-of-the-line offset instrument of '62, the 60th Anniversary American Ultra Luxe Jaguar® is a stunning modern take on one of Fender's most unique high-end models.\n\nThis Jaguar features the Ultra Luxe Augmented \"D\" neck with a 25.5\" scale for modern playability. The tapered neck heel allows easy access to the highest register and ultra-rolled fingerboard edges allow for endless playing comfort. A speedy 10\"-14\" compound-radius fingerboard with 22 stainless steel medium-jumbo frets means effortless and accurate soloing, while the Custom Double Tap™ humbucking pickups and advanced wiring options provide endless tonal possibilities.\n\nSculpted rear body contours are as beautiful as they are functional, increasing accessibility and comfort. Other features include sealed locking tuning machines, chrome hardware and a TUSQ™ nut. This state-of-the-art, limited-edition instrument will inspire you to push your playing to new heights. Includes premium molded hardshell case.",
+    "price": 3000
+  },
+  {
+    "id": "fender-squier-jazzmaster-2023",
+    "make": "Fender",
+    "model": "Squier Jazzmaster",
+    "year": 2023,
+    "type": "Solidbody",
+    "finish": "Satin Seafoam Green",
+    "status": "Available",
+    "images": [
+      "/assets/images/fender-squier-jazzmaster-2023/1.jpg",
+      "/assets/images/fender-squier-jazzmaster-2023/2.jpg",
+      "/assets/images/fender-squier-jazzmaster-2023/3.jpg",
+      "/assets/images/fender-squier-jazzmaster-2023/4.jpg",
+      "/assets/images/fender-squier-jazzmaster-2023/5.jpg",
+      "/assets/images/fender-squier-jazzmaster-2023/6.jpg",
+      "/assets/images/fender-squier-jazzmaster-2023/7.jpg",
+      "/assets/images/fender-squier-jazzmaster-2023/8.jpg"
+    ],
+    "specs": {
+      "Scale": "25.5\"",
+      "Body": "Offset"
+    },
+    "blurb": "Squier’s Vintage Edition series celebrates four decades of history with some gorgeous examples of Fender’s classic guitars and basses. From the gold anodized aluminum pickguard to the aged chrome hardware, this 40th Anniversary Jazzmaster is studded with striking style. It also boasts a classic Fender maple neck and fingerboard combo to add to this axe's utterly timeless look. A pair of Fender-designed alnico single-coils equips this guitar with an authentic articulate Jazzmaster jangle, with spongy lows and brightly detailed highs. Stunning looks, comfortable playability, and incredible sound: the Vintage Edition series is a gold mine of 40 years of high-quality Squier instruments.",
+    "price": 600
+  }
+]
