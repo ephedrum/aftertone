@@ -3,458 +3,250 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>The Aftertone Vault — Fine Guitars</title>
-  <meta name="description" content="The Aftertone Vault — a curated selection of fine guitars, photographed beautifully and presented with care. By appointment only." />
-  <meta property="og:title" content="The Aftertone Vault — Fine Guitars">
-  <meta property="og:description" content="Curated instruments, honest photos, detailed specs, by appointment in the DC area.">
-  <meta property="og:image" content="https://aftertone.novoajuan.com/assets/aftertone-vault-logo-light.png">
-  <meta property="og:url" content="https://aftertone.novoajuan.com/">
-  <meta property="og:type" content="website">
+  <title>Aftertone Vault — Admin</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <!-- Elegant serif for headings + sleek sans for UI -->
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400..900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
   <style>
-    :root {
-      --bg: #0a0a0a; /* near-black */
-      --card: #101010;
-      --muted: #bdbdbd;
-      --accent: #e5e5e5; /* off-white */
-    }
-    html, body { background: var(--bg); color: #f6f6f6; }
-    .font-display { font-family: "Cinzel", ui-serif, Georgia, serif; letter-spacing: 0.3px; }
-    .font-ui { font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji"; }
-    .glass { background: rgba(16,16,16,0.75); backdrop-filter: blur(6px); }
-    .fade-in { animation: fade 0.6s ease-out both; }
-    @keyframes fade { from { opacity: 0; transform: translateY(6px);} to { opacity: 1; transform: translateY(0);} }
-    .shadow-soft { box-shadow: 0 10px 30px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.03); }
-    .hover-rise { transition: transform .25s ease, box-shadow .3s ease; }
-    .hover-rise:hover { transform: translateY(-3px); box-shadow: 0 14px 34px rgba(0,0,0,.55); }
+    :root { --bg: #0a0a0a; }
+    body { background: var(--bg); color: #f6f6f6; }
+    .font-display { font-family: "Cinzel", ui-serif, Georgia, serif; letter-spacing: .3px; }
+    .font-ui { font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial; }
+    .glass { background: rgba(16,16,16,.7); backdrop-filter: blur(6px); }
+    .btn { border: 1px solid rgba(255,255,255,.12); background: #141414; }
+    .btn:hover { border-color: rgba(255,255,255,.22); background: #1a1a1a; }
     .tag { border: 1px solid rgba(255,255,255,.08); background: #121212; }
-    .btn { border: 1px solid rgba(255,255,255,.1); background: #141414; }
-    .btn:hover { border-color: rgba(255,255,255,.2); background: #1a1a1a; }
-    .grid-auto-fill { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
-    .logo-mark { filter: drop-shadow(0 8px 28px rgba(0,0,0,.45)); }
-    .image-skeleton { position: relative; overflow: hidden; }
-    .image-skeleton::before { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, #141414, #1b1b1b, #141414); animation: shimmer 1.6s infinite; }
-    @keyframes shimmer { 0% { transform: translateX(-100%);} 100% { transform: translateX(100%);} }
-    .image-skeleton img { opacity: 0; transition: opacity .6s ease; }
-    .image-loaded::before { display: none; }
-    .image-loaded img { opacity: 1; }
-  </style>
-  <style>
-    /* Reduced-motion safety */
-    @media (prefers-reduced-motion: reduce) { .fade-in { animation: none !important; } }
+    .shadow-soft { box-shadow: 0 10px 30px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.03); }
   </style>
 </head>
-<body class="font-ui selection:bg-white/10">
-  <!-- NAV -->
-  <header class="fixed inset-x-0 top-0 z-40">
-    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-      <div class="mt-4 flex items-center justify-between rounded-2xl glass shadow-soft px-3 py-2">
-        <a href="#home" class="flex items-center gap-3">
-          <!-- Swap src with your hosted logo; a light and dark variant is recommended. -->
-          <img alt="The Aftertone Vault" class="h-8 w-auto logo-mark" src="/assets/aftertone-vault-logo-light.png" onerror="this.src='https://placehold.co/200x60/000000/FFFFFF?text=Aftertone+Vault'">
-          <span class="sr-only">The Aftertone Vault</span>
-        </a>
-        <nav class="text-sm md:text-[15px] text-zinc-300">
-          <ul class="flex items-center gap-4 md:gap-8">
-            <li><a href="#inventory" class="hover:text-white">Inventory</a></li>
-            <li><a href="#about" class="hover:text-white">About</a></li>
-            <li><a href="#appointments" class="hover:text-white">Appointments</a></li>
-            <li><a href="#contact" class="hover:text-white">Contact</a></li>
-          </ul>
-        </nav>
+<body class="font-ui">
+  <header class="sticky top-0 z-40 border-b border-white/10 bg-black/60 backdrop-blur">
+    <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <img src="/assets/aftertone-vault-logo-light.png" alt="Aftertone Vault" class="h-8 w-auto">
+        <span class="font-display tracking-wide">Admin</span>
+      </div>
+      <div class="flex items-center gap-3 text-sm">
+        <button id="loginBtn" class="btn rounded-xl px-3 py-2">Log in</button>
+        <button id="logoutBtn" class="btn rounded-xl px-3 py-2 hidden">Log out</button>
       </div>
     </div>
   </header>
 
-<!-- HERO (~20% more space than last) -->
-<section id="home" class="relative isolate pt-10 md:pt-30">
-  <div class="absolute inset-0 -z-10">
-    <img class="h-full w-full object-cover opacity-70" src="assets/marble.avif" alt="Luxurious black marble with gold vein background" />
-    <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-black/50 to-black/80"></div>
-    <div class="absolute inset-0 bg-[radial-gradient(80%_60%_at_50%_40%,rgba(255,213,150,0.10),transparent_60%)]"></div>
-  </div>
-
-  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10 md:py-20">
-    <div class="grid md:grid-cols-2 gap-7 items-center min-h-[34vh] md:min-h-[36vh] lg:min-h-[38vh]">
-      <!-- Left: Big logo -->
-      <div>
-        <img class="w-[420px] max-w-full logo-mark fade-in" style="animation-delay:.05s"
-             src="/assets/aftertone-vault-logo-light.png" alt="The Aftertone Vault Logo">
-      </div>
-
-      <!-- Right: Title + copy + buttons -->
-      <div class="fade-in" style="animation-delay:.12s">
-        <h1 class="font-display text-4xl md:text-6xl tracking-tight fade-in" style="animation-delay:.18s">
-          The Aftertone Vault
-        </h1>
-        <p class="mt-3.5 max-w-xl text-zinc-300 leading-relaxed fade-in" style="animation-delay:.26s">
-          A curated selection of exceptional instruments. Photographed honestly, described precisely,
-          and shown by appointment in the DC area.
-        </p>
-        <div class="mt-5.5 flex items-center gap-3 fade-in" style="animation-delay:.34s">
-          <a href="#inventory" class="px-5 py-2.5 rounded-xl bg-black/50 border border-white/10 hover:bg-black/70">Browse Inventory</a>
-          <a href="#appointments" class="px-5 py-2.5 rounded-xl bg-black/50 border border-white/10 hover:bg-black/70">Book a Viewing</a>
+  <main class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+    <section class="rounded-2xl bg-[#0f0f0f] shadow-soft p-4 md:p-6">
+      <div class="flex flex-wrap items-center gap-3">
+        <div>
+          <h1 class="font-display text-2xl">Inventory Admin</h1>
+          <p class="text-zinc-400 text-sm">Edit live inventory stored in Netlify Blobs. Draft items stay hidden on the public site.</p>
+        </div>
+        <div class="ml-auto flex gap-2 items-center">
+          <input id="search" placeholder="Search make/model/finish..." class="tag rounded-xl px-3 py-2 bg-transparent text-sm min-w-[16rem]" />
+          <button id="refreshBtn" class="btn rounded-xl px-3 py-2 text-sm">Refresh</button>
         </div>
       </div>
-    </div>
-  </div>
-</section>
 
+      <div id="authNotice" class="mt-4 text-amber-300 text-sm hidden">Log in to load and edit inventory.</div>
+      <div id="error" class="mt-3 text-red-400 text-sm hidden"></div>
 
-
-
-  <!-- FILTERS -->
-  <section id="inventory" class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-14">
-    <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between md:gap-6">
-      <div>
-        <h2 class="font-display text-3xl md:text-4xl">Available Guitars</h2>
-        <p class="mt-2 text-sm text-zinc-400">No checkout here — just beautiful photos, detailed specs, and a quick way to inquire.</p>
-      </div>
-      <div class="flex flex-col gap-2 w-full md:w-auto">
-        <input id="search" class="tag rounded-xl px-3 py-2 bg-transparent text-sm" placeholder="Search make, model, finish, year...">
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm w-full md:w-auto">
-          <select id="filterMake" class="tag rounded-xl px-3 py-2 bg-transparent">
-            <option value="">All Makers</option>
-          </select>
-          <select id="filterType" class="tag rounded-xl px-3 py-2 bg-transparent">
-            <option value="">All Types</option>
-            <option>Solidbody</option>
-            <option>Semi-hollow</option>
-            <option>Hollowbody</option>
-            <option>Bass</option>
-          </select>
-          <select id="filterYear" class="tag rounded-xl px-3 py-2 bg-transparent">
-            <option value="">Any Year</option>
-          </select>
-          <select id="filterStatus" class="tag rounded-xl px-3 py-2 bg-transparent">
-            <option value="">Any Status</option>
-            <option>Available</option>
-            <option>On Hold</option>
-            <option>Sold</option>
-          </select>
-        </div>
-      </div>
-    </div>
-
-    <!-- GRID -->
-    <div id="grid" class="mt-8 grid grid-auto-fill gap-6"></div>
-    <div id="emptyState" class="hidden mt-12 text-center text-zinc-400">No instruments match your filters.</div>
-  </section>
-
-  <!-- ABOUT -->
-  <section id="about" class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-16">
-    <div class="grid md:grid-cols-5 gap-10 items-start">
-      <div class="md:col-span-2">
-        <div class="relative rounded-3xl overflow-hidden">
-          <img class="w-full h-80 object-cover" src="https://images.unsplash.com/photo-1511379938547-c1f69419868d?q=80&w=1200&auto=format&fit=crop" alt="Studio" />
-        </div>
-      </div>
-      <div class="md:col-span-3">
-        <h3 class="font-display text-3xl md:text-4xl mb-3">About the Vault</h3>
-        <p class="text-zinc-300 leading-relaxed">Founded by players, for players. The Aftertone Vault is a private collection and rotating inventory of instruments selected for tone, feel, and provenance. We photograph every guitar in natural, accurate light and describe wear candidly so you can buy with confidence.</p>
-        <ul class="mt-6 space-y-2 text-zinc-300">
-          <li>• In-person showings by appointment (Chevy Chase / Washington DC).</li>
-          <li>• High-resolution photo sets for each instrument.</li>
-          <li>• Consignments considered for exceptional pieces.</li>
-        </ul>
-      </div>
-    </div>
-  </section>
-
-  <!-- APPOINTMENTS -->
-  <section id="appointments" class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-16">
-    <div class="rounded-3xl p-8 md:p-12 bg-[#101010] shadow-soft">
-      <h3 class="font-display text-3xl md:text-4xl">Book a Private Viewing</h3>
-      <p class="mt-3 text-zinc-300 max-w-2xl">Viewings are by appointment. Tell us what you’d like to try and we’ll have it ready. We can also arrange a focused video walk-through if you’re out of town.</p>
-      <div class="mt-6 flex flex-wrap gap-3">
-        <a class="btn rounded-xl px-4 py-2" href="mailto:juanjo.novoa@gmail.com?subject=Viewing%20Request%20—%20The%20Aftertone%20Vault">Email Us</a>
-        <a class="btn rounded-xl px-4 py-2" href="https://cal.com/" target="_blank" rel="noopener">Schedule via Cal.com</a>
-      </div>
-    </div>
-  </section>
-
-  <!-- CONTACT -->
-  <section id="contact" class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-16">
-    <h3 class="font-display text-3xl md:text-4xl">Contact</h3>
-    <div class="mt-6 grid md:grid-cols-2 gap-8">
-      <form class="rounded-3xl p-6 bg-[#101010] shadow-soft" onsubmit="handleContact(event)">
-        <div class="grid grid-cols-1 gap-4">
-          <input required class="tag rounded-xl px-4 py-3 bg-transparent" placeholder="Name" />
-          <input required type="email" class="tag rounded-xl px-4 py-3 bg-transparent" placeholder="Email" />
-          <textarea required class="tag rounded-xl px-4 py-3 bg-transparent h-32" placeholder="Message"></textarea>
-        </div>
-        <button class="btn rounded-xl mt-4 px-5 py-2.5">Send</button>
-        <p id="contactNote" class="mt-3 text-xs text-zinc-400">This simple form opens your email client with a prefilled message.</p>
-      </form>
-      <div class="rounded-3xl p-6 bg-[#101010] shadow-soft">
-        <p class="text-zinc-300">Prefer direct?</p>
-        <div class="mt-2">
-          <a class="hover:underline" href="mailto:juanjo.novoa@gmail.com">juanjo.novoa@gmail.com</a>
-        </div>
-        <div class="mt-2 text-zinc-300">Instagram: <a class="hover:underline" href="#" target="_blank" rel="noopener">@aftertonevault</a></div>
-        <div class="mt-2 text-zinc-400 text-sm">Chevy Chase / Washington DC — viewings by appointment</div>
-      </div>
-    </div>
-  </section>
-
-  <footer class="border-t border-white/10">
-    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 flex items-center justify-between">
-      <p class="text-sm text-zinc-400">© <span id="year"></span> The Aftertone Vault</p>
-      <p class="text-sm text-zinc-500">All trademarks are property of their respective owners.</p>
-    </div>
-  </footer>
-
-  <!-- MODAL (Lightbox & Details) -->
-  <div id="modal" class="fixed inset-0 z-50 hidden">
-    <div class="absolute inset-0 bg-black/70" onclick="closeModal()"></div>
-    <div class="relative mx-auto my-6 max-w-5xl w-[92%]">
-      <div class="rounded-3xl bg-[#0f0f0f] shadow-soft overflow-hidden">
-        <div class="flex flex-col md:flex-row">
-          <div class="md:w-2/3 p-0 bg-black">
-            <div id="modalCarousel" class="relative">
-              <div id="modalSlides"></div>
-                <button class="absolute left-3 top-1/2 -translate-y-1/2 z-10 btn rounded-full p-2" onclick="prevSlide()" aria-label="Previous">&#10094;</button>
-                <button class="absolute right-3 top-1/2 -translate-y-1/2 z-10 btn rounded-full p-2" onclick="nextSlide()" aria-label="Next">&#10095;</button>
-            </div>
+      <div class="mt-6 grid md:grid-cols-3 gap-4">
+        <div class="md:col-span-2">
+          <div class="flex items-center justify-between mb-2">
+            <h2 class="font-display text-xl">Items</h2>
+            <span id="count" class="text-zinc-400 text-sm"></span>
           </div>
-          <div class="md:w-1/3 p-6">
-            <h4 id="modalTitle" class="font-display text-2xl"></h4>
-            <p id="modalSub" class="mt-1 text-sm text-zinc-400"></p>
-            <div id="modalTags" class="mt-4 flex flex-wrap gap-2"></div>
-            <dl id="modalSpecs" class="mt-6 grid grid-cols-2 gap-x-4 gap-y-2 text-sm"></dl>
-            <div class="mt-6 flex flex-wrap gap-2">
-              <a id="modalInquire" class="btn rounded-xl px-4 py-2" href="#">Inquire by Email</a>
-              <button class="btn rounded-xl px-4 py-2" onclick="closeModal()">Close</button>
+          <div id="list" class="space-y-2"></div>
+        </div>
+        <div class="md:col-span-1">
+          <div class="rounded-xl border border-white/10 p-3 space-y-3">
+            <div class="flex items-center justify-between">
+              <h3 class="font-display text-lg">Add / Edit</h3>
+              <button id="resetForm" class="text-xs text-zinc-400 hover:text-white">Reset</button>
             </div>
+            <form id="form" class="space-y-2 text-sm">
+              <div class="grid grid-cols-2 gap-2">
+                <input id="fMake" class="tag rounded-xl px-3 py-2 bg-transparent" placeholder="Make" required />
+                <input id="fModel" class="tag rounded-xl px-3 py-2 bg-transparent" placeholder="Model" required />
+              </div>
+              <div class="grid grid-cols-3 gap-2">
+                <input id="fYear" type="number" class="tag rounded-xl px-3 py-2 bg-transparent" placeholder="Year" />
+                <select id="fType" class="tag rounded-xl px-3 py-2 bg-transparent">
+                  <option>Solidbody</option><option>Semi-hollow</option><option>Hollowbody</option><option>Bass</option>
+                </select>
+                <select id="fStatus" class="tag rounded-xl px-3 py-2 bg-transparent">
+                  <option>Draft</option><option>Available</option><option>On Hold</option><option>Sold</option>
+                </select>
+              </div>
+              <input id="fFinish" class="tag rounded-xl px-3 py-2 bg-transparent" placeholder="Finish" />
+              <input id="fBadges" class="tag rounded-xl px-3 py-2 bg-transparent" placeholder="Badges (pipe-separated: New|Consignment)" />
+              <input id="fPrice" type="number" class="tag rounded-xl px-3 py-2 bg-transparent" placeholder="Price (optional)" />
+              <textarea id="fBlurb" class="tag rounded-xl px-3 py-2 bg-transparent h-20" placeholder="Blurb"></textarea>
+              <input id="fSpecs" class="tag rounded-xl px-3 py-2 bg-transparent monos" placeholder="Specs key:value | key:value" />
+              <input id="fImages" class="tag rounded-xl px-3 py-2 bg-transparent monos" placeholder="Image URLs pipe-separated" />
+              <input id="fId" class="tag rounded-xl px-3 py-2 bg-transparent monos" placeholder="ID (auto if blank)" />
+              <button class="btn w-full rounded-xl px-3 py-2 mt-2">Save Item</button>
+            </form>
           </div>
         </div>
       </div>
-    </div>
-  </div>
+    </section>
+  </main>
 
   <script>
-    // --------- FALLBACK INVENTORY (used if no /data/inventory.json and no browser copy) ---------
-    const FALLBACK_INVENTORY = [
-      {
-        id: 'prs-mev-2020',
-        make: 'PRS',
-        model: 'Modern Eagle V',
-        year: 2020,
-        type: 'Solidbody',
-        finish: 'Boyd Burst',
-        status: 'Available',
-        images: [
-          'https://images.unsplash.com/photo-1619983081563-430f63602796?q=80&w=1400&auto=format&fit=crop',
-          'https://images.unsplash.com/photo-1510915361894-db8b2eee0df1?q=80&w=1400&auto=format&fit=crop'
-        ],
-        specs: {
-          Scale: '25"',
-          Body: 'Mahogany/Maple',
-          Neck: 'Flamed Maple',
-          Fretboard: 'Brazilian Rosewood',
-          Weight: '7.6 lb',
-        },
-        blurb: 'Rare Wood Library build, impeccably kept.'
-      },
-      {
-        id: 'fender-jaguar-mij',
-        make: 'Fender',
-        model: 'Jaguar 60s Traditional',
-        year: 2018,
-        type: 'Solidbody',
-        finish: 'Sherwood Green',
-        status: 'On Hold',
-        images: [
-          'https://images.unsplash.com/photo-1511379938547-c1f69419868d?q=80&w=1400&auto=format&fit=crop',
-          'https://images.unsplash.com/photo-1519750157634-b6d493a0f77c?q=80&w=1400&auto=format&fit=crop'
-        ],
-        specs: { Scale: '24"', Body: 'Alder', Neck: 'Maple', Fretboard: 'Rosewood', Weight: '8.1 lb' },
-        blurb: 'Made in Japan, shimmering surf tone for days.'
-      },
-      {
-        id: 'g-l-doheny',
-        make: 'G&L',
-        model: 'Doheny',
-        year: 2022,
-        type: 'Solidbody',
-        finish: 'Orange Metal Flake',
-        status: 'Sold',
-        images: [
-          'https://images.unsplash.com/photo-1607462109225-6b64ae2e80b5?q=80&w=1400&auto=format&fit=crop'
-        ],
-        specs: { Scale: '25.5"', Body: 'Alder', Neck: 'Maple', Fretboard: 'Maple', Weight: '7.9 lb' },
-        blurb: 'Sparkle that looks alive under lights.'
-      }
-    ];
+    const listEl = document.getElementById('list');
+    const errorEl = document.getElementById('error');
+    const authNotice = document.getElementById('authNotice');
+    const countEl = document.getElementById('count');
+    const searchEl = document.getElementById('search');
+    const form = document.getElementById('form');
+    const refreshBtn = document.getElementById('refreshBtn');
+    const loginBtn = document.getElementById('loginBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const fields = {
+      make: document.getElementById('fMake'),
+      model: document.getElementById('fModel'),
+      year: document.getElementById('fYear'),
+      type: document.getElementById('fType'),
+      status: document.getElementById('fStatus'),
+      finish: document.getElementById('fFinish'),
+      badges: document.getElementById('fBadges'),
+      price: document.getElementById('fPrice'),
+      blurb: document.getElementById('fBlurb'),
+      specs: document.getElementById('fSpecs'),
+      images: document.getElementById('fImages'),
+      id: document.getElementById('fId'),
+    };
 
-    let INVENTORY = [];
+    let token = null;
+    let inventory = [];
 
-    // --------- Filters & Rendering helpers ---------
-    const filterMake = document.getElementById('filterMake');
-    const filterYear = document.getElementById('filterYear');
-    const searchInput = document.getElementById('search');
+    netlifyIdentity.on('login', (user) => { token = user.token.access_token; syncAuthUI(); loadInventory(); netlifyIdentity.close(); });
+    netlifyIdentity.on('logout', () => { token = null; inventory = []; render(); syncAuthUI(); });
+    netlifyIdentity.on('init', (user) => { token = user?.token?.access_token || null; syncAuthUI(); if (token) loadInventory(); });
+    netlifyIdentity.init();
 
-    function hydrateFilters(){
-      const selMake = filterMake.value; const selYear = filterYear.value;
-      filterMake.innerHTML = '<option value="">All Makers</option>';
-      filterYear.innerHTML = '<option value="">Any Year</option>';
-      const makeSet = new Set(INVENTORY.map(i => i.make).filter(Boolean));
-      const yearSet = new Set(INVENTORY.map(i => i.year).filter(Boolean));
-      [...makeSet].sort().forEach(m=>{ const o=document.createElement('option'); o.value=m; o.textContent=m; filterMake.appendChild(o); });
-      [...yearSet].sort((a,b)=>b-a).forEach(y=>{ const o=document.createElement('option'); o.value=y; o.textContent=y; filterYear.appendChild(o); });
-      if ([...filterMake.options].some(o=>o.value===selMake)) filterMake.value=selMake;
-      if ([...filterYear.options].some(o=>String(o.value)===String(selYear))) filterYear.value=selYear;
+    loginBtn.addEventListener('click', () => netlifyIdentity.open());
+    logoutBtn.addEventListener('click', () => netlifyIdentity.logout());
+    refreshBtn.addEventListener('click', loadInventory);
+    searchEl.addEventListener('input', render);
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!token) return showError('Log in to save.');
+      const item = collectForm();
+      try {
+        const res = await fetch('/.netlify/functions/inventory', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+          body: JSON.stringify({ item }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Failed to save');
+        inventory = data;
+        resetForm();
+        render();
+      } catch (err) { showError(err.message); }
+    });
+
+    function syncAuthUI() {
+      const authed = Boolean(token);
+      loginBtn.classList.toggle('hidden', authed);
+      logoutBtn.classList.toggle('hidden', !authed);
+      authNotice.classList.toggle('hidden', authed);
     }
 
-    // --------- RENDER GRID ---------
-    const grid = document.getElementById('grid');
-    const emptyState = document.getElementById('emptyState');
-    const filters = { make: '', type: '', year: '', status: '', q: '' };
-    document.getElementById('filterMake').addEventListener('change', e => { filters.make = e.target.value; render(); });
-    document.getElementById('filterType').addEventListener('change', e => { filters.type = e.target.value; render(); });
-    document.getElementById('filterYear').addEventListener('change', e => { filters.year = e.target.value; render(); });
-    document.getElementById('filterStatus').addEventListener('change', e => { filters.status = e.target.value; render(); });
-    searchInput.addEventListener('input', e => { filters.q = e.target.value.toLowerCase(); render(); });
-
-    function matches(i) {
-      if (i.status === 'Draft') return false;
-      const searchable = [i.make, i.model, i.finish, i.year, i.type, i.blurb].map(v => (v||'').toString().toLowerCase()).join(' ');
-      return (!filters.make || i.make === filters.make)
-        && (!filters.type || i.type === filters.type)
-        && (!filters.year || String(i.year) === String(filters.year))
-        && (!filters.status || i.status === filters.status)
-        && (!filters.q || searchable.includes(filters.q));
+    async function loadInventory() {
+      if (!token) { render(); return; }
+      try {
+        const res = await fetch('/.netlify/functions/inventory?includeDrafts=1', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Failed to load inventory');
+        inventory = data;
+        render();
+      } catch (err) { showError(err.message); }
     }
 
     function render() {
-      grid.innerHTML = '';
-      const items = INVENTORY.filter(matches);
-      emptyState.classList.toggle('hidden', items.length !== 0);
-      items.forEach(item => grid.appendChild(card(item)));
-      // Progressive image fade-in
-      document.querySelectorAll('[data-skeleton]').forEach(el => {
-        const img = el.querySelector('img');
-        img.addEventListener('load', () => el.classList.add('image-loaded'));
+      errorEl.classList.add('hidden');
+      const q = (searchEl.value || '').toLowerCase();
+      const items = inventory.filter((i) =>
+        [i.make, i.model, i.finish, i.year, i.status, i.blurb].some((v) =>
+          (v || '').toString().toLowerCase().includes(q)
+        )
+      );
+      countEl.textContent = items.length ? `${items.length} item(s)` : '';
+      listEl.innerHTML = items.map(row).join('');
+    }
+
+    function row(i) {
+      const imgs = (i.images || []).length;
+      const badges = (i.badges || []).map((b) => `<span class="text-amber-300 text-xs">${b}</span>`).join(' ');
+      return `
+        <article class="rounded-xl border border-white/10 p-3 flex items-start gap-3">
+          <div class="flex-1">
+            <div class="flex items-center gap-2">
+              <h3 class="font-display text-lg">${i.make} <span class="font-normal">${i.model}</span></h3>
+              <span class="text-xs px-2 py-1 rounded-full bg-zinc-800">${i.status || ''}</span>
+              ${badges}
+            </div>
+            <p class="text-sm text-zinc-400">${i.year || ''} • ${i.finish || ''}</p>
+            <p class="text-xs text-zinc-500 mt-1">${i.id}</p>
+            <p class="text-sm text-zinc-300 mt-1 line-clamp-2">${i.blurb || ''}</p>
+          </div>
+          <div class="flex flex-col items-end gap-2">
+            <span class="text-xs text-zinc-400">${imgs} image${imgs === 1 ? '' : 's'}</span>
+            <button class="btn rounded-lg px-3 py-1 text-xs" onclick='fillForm(${JSON.stringify(i)})'>Edit</button>
+          </div>
+        </article>
+      `;
+    }
+
+    function fillForm(item) {
+      fields.make.value = item.make || '';
+      fields.model.value = item.model || '';
+      fields.year.value = item.year || '';
+      fields.type.value = item.type || 'Solidbody';
+      fields.status.value = item.status || 'Draft';
+      fields.finish.value = item.finish || '';
+      fields.badges.value = (item.badges || []).join('|');
+      fields.price.value = item.price || '';
+      fields.blurb.value = item.blurb || '';
+      fields.specs.value = Object.entries(item.specs || {}).map(([k,v]) => `${k}:${v}`).join(' | ');
+      fields.images.value = (item.images || []).join('|');
+      fields.id.value = item.id || '';
+    }
+
+    function collectForm() {
+      const specs = {};
+      (fields.specs.value || '').split('|').map(s => s.trim()).filter(Boolean).forEach(pair => {
+        const [k,...rest] = pair.split(':'); if (!k) return; specs[k.trim()] = rest.join(':').trim();
       });
+      const images = (fields.images.value || '').split('|').map(s => s.trim()).filter(Boolean);
+      const badges = (fields.badges.value || '').split('|').map(s => s.trim()).filter(Boolean);
+      return {
+        id: fields.id.value || undefined,
+        make: fields.make.value.trim(),
+        model: fields.model.value.trim(),
+        year: fields.year.value ? Number(fields.year.value) : undefined,
+        type: fields.type.value,
+        status: fields.status.value,
+        finish: fields.finish.value.trim(),
+        badges,
+        price: fields.price.value ? Number(fields.price.value) : undefined,
+        blurb: fields.blurb.value.trim(),
+        specs,
+        images,
+      };
     }
 
-    function card(i) {
-      const el = document.createElement('article');
-      el.className = 'rounded-3xl overflow-hidden bg-[#101010] hover-rise shadow-soft fade-in';
-      el.innerHTML = `
-        <div class="image-skeleton aspect-[4/3]" data-skeleton>
-          <img class="h-full w-full object-cover" src="${(i.images||[])[0] || ''}" alt="${i.make} ${i.model}" loading="lazy"/>
-        </div>
-        <div class="p-4">
-          <div class="flex items-start justify-between gap-3">
-            <h3 class="font-display text-xl">${i.make} <span class="font-normal">${i.model}</span></h3>
-            <span class="text-xs px-2 py-1 rounded-full ${badgeColor(i.status)}">${i.status||''}</span>
-          </div>
-          ${(i.badges||[]).map(b=>`<span class="tag text-[11px] rounded-lg px-2 py-1 inline-block mt-1">${b}</span>`).join(' ')}
-          <p class="text-sm text-zinc-400 mt-1">${i.year||''} • ${i.finish||''}</p>
-          <div class="mt-3 flex gap-2">
-            <button class="btn rounded-xl px-3 py-1.5 text-sm" onclick="openModal('${i.id}')">View</button>
-            <a class="btn rounded-xl px-3 py-1.5 text-sm" href="mailto:juanjo.novoa@gmail.com?subject=${encodeURIComponent((i.make||'') + ' ' + (i.model||'') + ' (' + (i.year||'') + ')')}&body=${encodeURIComponent('Hi — I\'m interested in ' + (i.make||'') + ' ' + (i.model||'') + ' (' + (i.year||'') + '). Could you share more photos and details?')}" >Inquire</a>
-          </div>
-        </div>`;
-      return el;
-    }
+    function resetForm() { form.reset(); fields.status.value = 'Draft'; fields.type.value = 'Solidbody'; fields.badges.value=''; fields.specs.value=''; fields.images.value=''; fields.id.value=''; }
+    document.getElementById('resetForm').addEventListener('click', resetForm);
 
-    function badgeColor(status) {
-      switch (status) {
-        case 'Available': return 'bg-emerald-600/20 text-emerald-300 border border-emerald-700/30';
-        case 'On Hold': return 'bg-amber-600/20 text-amber-300 border border-amber-700/30';
-        case 'Sold': return 'bg-zinc-700/40 text-zinc-300 border border-zinc-600/50';
-        default: return 'bg-zinc-700/40 text-zinc-300 border border-zinc-600/50';
-      }
-    }
-
-    // --------- MODAL / LIGHTBOX ---------
-    let current = null; let slideIndex = 0;
-    const modal = document.getElementById('modal');
-    const carousel = document.getElementById('modalCarousel');
-    const modalTitle = document.getElementById('modalTitle');
-    const modalSub = document.getElementById('modalSub');
-    const modalTags = document.getElementById('modalTags');
-    const modalSpecs = document.getElementById('modalSpecs');
-    const modalInquire = document.getElementById('modalInquire');
-
-    function openModal(id) {
-      current = INVENTORY.find(x => x.id === id);
-      if (!current) return;
-      slideIndex = 0;
-      modalTitle.textContent = `${current.make} ${current.model}`;
-      modalSub.textContent = `${current.year || ''} • ${current.finish || ''}`;
-      modalTags.innerHTML = `<span class="tag text-xs rounded-lg px-2 py-1">${current.type || ''}</span>` +
-        (current.blurb ? `<span class="tag text-xs rounded-lg px-2 py-1">${current.blurb}</span>` : '');
-      modalSpecs.innerHTML = Object.entries(current.specs || {}).map(([k,v]) =>
-        `<dt class="text-zinc-400">${k}</dt><dd class="text-zinc-100">${v}</dd>`).join('');
-      modalInquire.href = `mailto:juanjo.novoa@gmail.com?subject=${encodeURIComponent((current.make||'') + ' ' + (current.model||'') + ' (' + (current.year||'') + ')')}`;
-      renderSlides();
-      modal.classList.remove('hidden');
-      document.body.style.overflow = 'hidden';
-    }
-    function closeModal() { modal.classList.add('hidden'); document.body.style.overflow = ''; }
-    const slidesEl = document.getElementById('modalSlides');
-
-    function renderSlides() {
-      slidesEl.innerHTML = (current.images || []).map((src, idx) => `
-        <figure class="${idx===slideIndex?'':'hidden'}">
-          <img class="w-full h-[60vh] md:h-[72vh] object-contain bg-black" src="${src}" alt="${current.make} ${current.model} photo ${idx+1}">
-        </figure>`).join('');
-    }
-    function nextSlide(){ slideIndex = (slideIndex + 1) % (current.images?.length||1); renderSlides(); }
-    function prevSlide(){ slideIndex = (slideIndex - 1 + (current.images?.length||1)) % (current.images?.length||1); renderSlides(); }
-
-    // --------- CONTACT: open mail client prefilled ---------
-    function handleContact(e){
-      e.preventDefault();
-      const [nameEl, emailEl, msgEl] = e.target.querySelectorAll('input, textarea');
-      const subject = encodeURIComponent('Message — The Aftertone Vault');
-      const body = encodeURIComponent(`Name: ${nameEl.value}
-Email: ${emailEl.value}
-
-${msgEl.value}`);
-      window.location.href = `mailto:juanjo.novoa@gmail.com?subject=${subject}&body=${body}`;
-    }
-
-    // --------- INIT: Load inventory created with loader.html ---------
-    async function loadInventory(){
-      // 1) Live inventory from Netlify Function (Blobs)
-      try {
-        const res = await fetch('/.netlify/functions/inventory', { cache: 'no-store' });
-        if (res.ok) {
-          INVENTORY = await res.json();
-          hydrateFilters(); render(); return;
-        }
-      } catch { /* ignore */ }
-      // 2) Browser copy saved by loader.html (legacy)
-      const saved = localStorage.getItem('aftertone.inventory');
-      if (saved) {
-        try { INVENTORY = JSON.parse(saved); hydrateFilters(); render(); return; } catch { /* ignore */ }
-      }
-      // 3) Hosted JSON fallback
-      try {
-        const res = await fetch('/data/inventory.json', { cache: 'no-store' });
-        if (res.ok) { INVENTORY = await res.json(); hydrateFilters(); render(); return; }
-      } catch { /* ignore */ }
-      // 4) Fallback inline (for first-run/dev)
-      INVENTORY = FALLBACK_INVENTORY; hydrateFilters(); render();
-    }
-
-    // Boot
-    loadInventory();
-    document.getElementById('year').textContent = new Date().getFullYear();
-    window.addEventListener('keydown', e => {
-      if (modal.classList.contains('hidden')) return;
-      if (e.key === 'ArrowRight') nextSlide();
-      if (e.key === 'ArrowLeft')  prevSlide();
-    });
-
+    function showError(msg) { errorEl.textContent = msg; errorEl.classList.remove('hidden'); }
   </script>
 </body>
 </html>
