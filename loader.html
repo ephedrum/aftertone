@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Aftertone Vault — Inventory Loader</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400..900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root { --bg: #0a0a0a; }
+    html, body { background: var(--bg); color: #f6f6f6; }
+    .font-display { font-family: "Cinzel", ui-serif, Georgia, serif; letter-spacing: .3px; }
+    .font-ui { font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial; }
+    .glass { background: rgba(16,16,16,.7); backdrop-filter: blur(6px); }
+    .btn { border: 1px solid rgba(255,255,255,.12); background: #141414; }
+    .btn:hover { border-color: rgba(255,255,255,.22); background: #1a1a1a; }
+    .tag { border: 1px solid rgba(255,255,255,.08); background: #121212; }
+    .shadow-soft { box-shadow: 0 10px 30px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.03); }
+    .table { border-collapse: separate; border-spacing: 0 10px; }
+    .table th { position: sticky; top: 0; background: #0f0f0f; z-index: 5; }
+    .cell { background: #111; border: 1px solid rgba(255,255,255,.06); padding: .6rem .7rem; border-radius: .65rem; }
+    .chip { background: #171717; border: 1px solid rgba(255,255,255,.08); border-radius: .6rem; padding: .15rem .45rem; }
+    .monos { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+  </style>
+</head>
+<body class="font-ui">
+  <header class="sticky top-0 z-40 border-b border-white/10 bg-black/50 backdrop-blur">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <img src="/assets/aftertone-vault-logo-light.png" alt="Aftertone Vault" class="h-8 w-auto">
+        <span class="font-display tracking-wide">Inventory Loader</span>
+      </div>
+      <nav class="text-sm text-zinc-300 flex items-center gap-4">
+        <a href="/" class="hover:text-white">← Back to site</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+    <section class="rounded-2xl bg-[#0f0f0f] shadow-soft p-4 md:p-6">
+      <h1 class="font-display text-2xl md:text-3xl">Inventory Admin</h1>
+      <p class="text-zinc-400 mt-1">Load from JSON/CSV, preview & edit, then export <code class="monos">inventory.json</code>. The public site auto-loads from <span class="chip monos">/data/inventory.json</span> (or your browser copy while testing).</p>
+
+      <div class="mt-5 grid md:grid-cols-2 gap-4">
+        <div class="rounded-xl border border-white/10 p-4">
+          <h2 class="font-display text-xl">Import</h2>
+          <div class="mt-3 flex flex-wrap gap-2 items-center text-sm">
+            <label class="btn rounded-xl px-3 py-2 cursor-pointer"> <input type="file" id="fileInput" accept=".json,.csv" class="hidden">Load JSON/CSV</label>
+            <button id="loadLocal" class="btn rounded-xl px-3 py-2">Load Browser Copy</button>
+            <button id="clearLocal" class="btn rounded-xl px-3 py-2">Clear Browser Copy</button>
+          </div>
+          <div class="mt-3 flex flex-wrap gap-2 items-center text-sm">
+            <input id="fetchUrl" placeholder="https://... (JSON or CSV)" class="tag rounded-xl px-3 py-2 bg-transparent w-full md:w-auto md:min-w-[22rem]" />
+            <button id="fetchBtn" class="btn rounded-xl px-3 py-2">Fetch URL</button>
+          </div>
+          <p class="mt-2 text-xs text-zinc-500">CSV headers supported: <span class="monos">id, make, model, year, type, finish, status, images, blurb, price, spec_*</span>. Multiple images: separate with <span class="monos">|</span>.</p>
+        </div>
+        <div class="rounded-xl border border-white/10 p-4">
+          <h2 class="font-display text-xl">Export</h2>
+          <div class="mt-3 flex flex-wrap gap-2 items-center text-sm">
+            <button id="exportJSON" class="btn rounded-xl px-3 py-2">Download inventory.json</button>
+            <button id="saveLocal" class="btn rounded-xl px-3 py-2">Save Browser Copy</button>
+            <button id="copyJSON" class="btn rounded-xl px-3 py-2">Copy JSON</button>
+          </div>
+          <p class="mt-2 text-xs text-zinc-500">Upload the downloaded file to <span class="monos">/data/inventory.json</span> on your host to update the live site.</p>
+        </div>
+      </div>
+
+      <!-- Quick Add (single item append/update) -->
+      <section class="mt-6 rounded-xl border border-white/10 p-4">
+        <h2 class="font-display text-xl">Quick Add</h2>
+        <p class="text-zinc-400 text-sm mt-1">
+          Append a single guitar to the working dataset (or update if the ID already exists).
+          then <strong>Download</strong> <code class="monos">inventory.json</code> and commit it to Git.
+        </p>
+
+        <div class="mt-4 grid md:grid-cols-3 gap-4">
+          <!-- Column 1: Identity -->
+          <div class="space-y-2">
+            <label class="block text-sm text-zinc-300">Make
+              <input id="qaMake" class="tag w-full rounded-xl px-3 py-2 bg-transparent" placeholder="Fender" />
+            </label>
+            <label class="block text-sm text-zinc-300">Model
+              <input id="qaModel" class="tag w-full rounded-xl px-3 py-2 bg-transparent" placeholder="Jazzmaster" />
+            </label>
+
+            <div class="grid grid-cols-2 gap-2">
+              <label class="block text-sm text-zinc-300">Year
+                <input id="qaYear" type="number" class="tag w-full rounded-xl px-3 py-2 bg-transparent" placeholder="2021" />
+              </label>
+              <label class="block text-sm text-zinc-300">Type
+                <select id="qaType" class="tag w-full rounded-xl px-3 py-2 bg-transparent">
+                  <option>Solidbody</option>
+                  <option>Semi-hollow</option>
+                  <option>Hollowbody</option>
+                  <option>Bass</option>
+                </select>
+              </label>
+            </div>
+
+            <label class="block text-sm text-zinc-300">Finish
+              <input id="qaFinish" class="tag w-full rounded-xl px-3 py-2 bg-transparent" placeholder="Sunburst" />
+            </label>
+
+            <label class="block text-sm text-zinc-300">Status
+              <select id="qaStatus" class="tag w-full rounded-xl px-3 py-2 bg-transparent">
+                <option>Available</option>
+                <option>On Hold</option>
+                <option>Sold</option>
+              </select>
+            </label>
+
+            <div class="flex items-center gap-2 text-sm">
+              <label class="flex items-center gap-2">
+                <input id="qaAutoSlug" type="checkbox" class="accent-white" checked>
+                Auto-slug ID
+              </label>
+            </div>
+
+            <label class="block text-sm text-zinc-300">ID
+              <input id="qaId" class="tag w-full rounded-xl px-3 py-2 bg-transparent monos" placeholder="auto from Make/Model/Year" />
+            </label>
+          </div>
+
+          <!-- Column 2: Details -->
+          <div class="space-y-2">
+            <label class="block text-sm text-zinc-300">Blurb
+              <textarea id="qaBlurb" class="tag w-full rounded-xl px-3 py-2 bg-transparent h-24" placeholder="One-line description"></textarea>
+            </label>
+
+            <label class="block text-sm text-zinc-300">Price (optional)
+              <input id="qaPrice" type="number" class="tag w-full rounded-xl px-3 py-2 bg-transparent" placeholder="0" />
+            </label>
+
+            <div>
+              <div class="flex items-center justify-between">
+                <span class="text-sm text-zinc-300">Specs</span>
+                <button id="qaAddSpec" class="btn rounded-lg px-2.5 py-1 text-xs">+ Add Spec</button>
+              </div>
+              <div id="qaSpecsRows" class="mt-2 space-y-2"></div>
+            </div>
+          </div>
+
+          <!-- Column 3: Images -->
+          <div class="space-y-2">
+            <label class="block text-sm text-zinc-300">Image input mode
+              <select id="qaImgMode" class="tag w-full rounded-xl px-3 py-2 bg-transparent">
+                <option value="filenames">Filenames (auto-prefix)</option>
+                <option value="urls">Full URLs</option>
+              </select>
+            </label>
+
+            <div id="qaFilenamesWrap">
+              <label class="block text-sm text-zinc-300">Filenames (separate with <span class="monos">|</span>)
+                <input id="qaImgFiles" class="tag w-full rounded-xl px-3 py-2 bg-transparent monos" placeholder="1.jpg | 2.jpg | 3.jpg | 4.jpg | 5.jpg | 6.jpg | 7.jpg | 8.jpg" />
+              </label>
+              <p class="text-xs text-zinc-500 mt-1">
+                Base path: <code id="qaImgBase" class="monos">/assets/images/ID/</code>
+              </p>
+            </div>
+
+            <div id="qaURLsWrap" class="hidden">
+              <label class="block text-sm text-zinc-300">Image URLs (one per line or <span class="monos">|</span> separated)
+                <textarea id="qaImgURLs" class="tag w-full rounded-xl px-3 py-2 bg-transparent monos h-24" placeholder="https://.../1.jpg
+      https://.../2.jpg"></textarea>
+              </label>
+            </div>
+
+            <label class="flex items-center gap-2 text-sm mt-2">
+              <input id="qaUpdateIfExists" type="checkbox" class="accent-white" checked>
+              Update if ID exists
+            </label>
+
+            <div class="flex flex-wrap gap-2 mt-2">
+              <button id="qaAppendBtn" class="btn rounded-xl px-3 py-2">Append</button>
+              <button id="qaResetBtn" type="button" class="btn rounded-xl px-3 py-2">Reset</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+      <div class="mt-6 rounded-xl border border-white/10 p-4">
+        <div class="flex items-center justify-between gap-3">
+          <h2 class="font-display text-xl">Inventory <span id="count" class="text-zinc-400 text-base"></span></h2>
+          <div class="flex items-center gap-2 text-sm">
+            <button id="addRow" class="btn rounded-xl px-3 py-2">+ Add Row</button>
+            <button id="validateBtn" class="btn rounded-xl px-3 py-2">Validate</button>
+          </div>
+        </div>
+        <div class="mt-3 overflow-auto">
+          <table class="w-full text-sm table">
+            <thead>
+              <tr class="text-left text-zinc-400">
+                <th class="p-2">ID</th>
+                <th class="p-2">Make</th>
+                <th class="p-2">Model</th>
+                <th class="p-2">Year</th>
+                <th class="p-2">Type</th>
+                <th class="p-2">Finish</th>
+                <th class="p-2">Status</th>
+                <th class="p-2">Images (| separated)</th>
+                <th class="p-2">Blurb</th>
+                <th class="p-2">Specs (JSON)</th>
+                <th class="p-2">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="rows"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <details class="mt-6 open:bg-black/20 rounded-xl p-4">
+        <summary class="cursor-pointer text-zinc-300">Schema & Tips</summary>
+        <div class="mt-2 text-sm text-zinc-300 space-y-2">
+          <p>Required fields for each item: <span class="monos">id, make, model, year, type, finish, status, images</span>. The public site will also display <span class="monos">specs</span> (object with key/value pairs) and <span class="monos">blurb</span>.</p>
+          <p>Example JSON item:</p>
+          <pre class="whitespace-pre-wrap monos bg-black/40 p-3 rounded-lg">{
+  "id": "prs-mev-2020",
+  "make": "PRS",
+  "model": "Modern Eagle V",
+  "year": 2020,
+  "type": "Solidbody",
+  "finish": "Boyd Burst",
+  "status": "Available",
+  "images": ["https://.../1.jpg", "https://.../2.jpg"],
+  "specs": { "Scale": "25\"", "Body": "Mahogany/Maple" },
+  "blurb": "Short description"
+}</pre>
+        </div>
+      </details>
+    </section>
+  </main>
+
+  <script>
+    // ---------- State ----------
+    let INVENTORY = [];
+    const LS_KEY = 'aftertone.inventory';
+
+    // ---------- Helpers ----------
+    function $(sel){ return document.querySelector(sel); }
+    function el(tag, cls){ const e=document.createElement(tag); if(cls) e.className=cls; return e; }
+    function slug(s){ return (s||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,''); }
+
+    function parseCSVRow(line){
+      const out=[]; let cur=''; let q=false; for(let i=0;i<line.length;i++){
+        const c=line[i];
+        if(c==='"'){ if(q && line[i+1]==='"'){ cur+='"'; i++; } else { q=!q; } }
+        else if(c===',' && !q){ out.push(cur); cur=''; }
+        else { cur+=c; }
+      } out.push(cur); return out;
+    }
+    function parseCSVToInventory(csv){
+      const rows = csv.trim().split(/\r?\n/);
+      const headers = parseCSVRow(rows.shift()||'');
+      return rows.filter(r=>r.trim()).map(line=>{
+        const cols = parseCSVRow(line);
+        const obj={}; headers.forEach((h,i)=>obj[h.trim()]= (cols[i]??'').trim());
+        const specs={}; Object.keys(obj).forEach(k=>{ if(/^spec_/i.test(k)) specs[k.replace(/^spec_/i,'')]=obj[k]; });
+        const images=(obj.images||'').split('|').map(s=>s.trim()).filter(Boolean);
+        const year = obj.year? parseInt(obj.year,10): undefined;
+        return { id: obj.id||slug(`${obj.make}-${obj.model}-${obj.year||''}`), make: obj.make||'', model: obj.model||'', year, type: obj.type||'Solidbody', finish: obj.finish||'', status: obj.status||'Available', images, specs, blurb: obj.blurb||'', price: obj.price? Number(obj.price): undefined };
+      });
+    }
+
+    function toDownloadJSON(){ return JSON.stringify(INVENTORY, null, 2); }
+    function download(text, filename, type){ const blob=new Blob([text],{type}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=filename; a.click(); URL.revokeObjectURL(url); }
+
+    function render(){
+      $('#count').textContent = `(${INVENTORY.length})`;
+      const body = $('#rows'); body.innerHTML='';
+      INVENTORY.forEach((it, idx)=>{
+        const tr = el('tr');
+        function cell(key, value, placeholder){
+          const td = el('td','p-2 align-top');
+          const div = el('div','cell monos');
+          div.contentEditable = true; div.spellcheck=false; div.dataset.key=key; div.dataset.index=String(idx); div.textContent = value ?? ''; div.placeholder = placeholder||'';
+          div.addEventListener('input', onEdit);
+          td.appendChild(div); return td;
+        }
+        tr.appendChild(cell('id', it.id));
+        tr.appendChild(cell('make', it.make));
+        tr.appendChild(cell('model', it.model));
+        tr.appendChild(cell('year', it.year ?? ''));
+        tr.appendChild(cell('type', it.type));
+        tr.appendChild(cell('finish', it.finish ?? ''));
+        tr.appendChild(cell('status', it.status ?? 'Available'));
+        tr.appendChild(cell('images', (it.images||[]).join(' | '), 'url1 | url2'));
+        tr.appendChild(cell('blurb', it.blurb ?? ''));
+        tr.appendChild(cell('specs', JSON.stringify(it.specs||{}), '{"Scale":"25\""}'));
+        const actions = el('td','p-2');
+        const del = el('button','btn rounded-lg px-2.5 py-1 text-xs'); del.textContent='Delete'; del.addEventListener('click', ()=>{ INVENTORY.splice(idx,1); render(); });
+        actions.appendChild(del); tr.appendChild(actions);
+        body.appendChild(tr);
+      });
+    }
+
+    function onEdit(e){
+      const div = e.currentTarget; const idx = parseInt(div.dataset.index,10); const key = div.dataset.key;
+      let val = div.textContent || '';
+      if(key==='year'){ val = val? parseInt(val,10): undefined; }
+      if(key==='images'){ val = val.split('|').map(s=>s.trim()).filter(Boolean); }
+      if(key==='specs'){
+        try { val = val? JSON.parse(val): {}; div.classList.remove('ring','ring-red-500/60'); }
+        catch { div.classList.add('ring','ring-red-500/60'); return; }
+      }
+      INVENTORY[idx][key] = val;
+    }
+
+    function addRow(){
+      const now = Date.now();
+      INVENTORY.push({ id: `new-${now}`, make:'', model:'', year: undefined, type:'Solidbody', finish:'', status:'Available', images:[], specs:{}, blurb:'' });
+      render();
+    }
+
+    function validate(){
+      const problems=[];
+      INVENTORY.forEach((it,i)=>{
+        const missing=[];
+        ['id','make','model','year','type','finish','status'].forEach(k=>{ if(!it[k] && it[k]!==0) missing.push(k); });
+        if(!Array.isArray(it.images) || it.images.length===0) missing.push('images');
+        if(missing.length) problems.push({index:i+1, id: it.id, missing});
+      });
+      if(problems.length===0) { alert('All good — required fields present.'); return; }
+      alert('Missing fields on some rows:\n'+problems.map(p=>`Row ${p.index} (${p.id||'no id'}): ${p.missing.join(', ')}`).join('\n'));
+    }
+
+    // ---------- Quick Add logic ----------
+function qaRefs(){
+  return {
+    id: document.getElementById('qaId'),
+    autoSlug: document.getElementById('qaAutoSlug'),
+    make: document.getElementById('qaMake'),
+    model: document.getElementById('qaModel'),
+    year: document.getElementById('qaYear'),
+    type: document.getElementById('qaType'),
+    finish: document.getElementById('qaFinish'),
+    status: document.getElementById('qaStatus'),
+    blurb: document.getElementById('qaBlurb'),
+    price: document.getElementById('qaPrice'),
+    imgMode: document.getElementById('qaImgMode'),
+    imgFiles: document.getElementById('qaImgFiles'),
+    imgURLs: document.getElementById('qaImgURLs'),
+    imgBase: document.getElementById('qaImgBase'),
+    filenamesWrap: document.getElementById('qaFilenamesWrap'),
+    urlsWrap: document.getElementById('qaURLsWrap'),
+    updateIfExists: document.getElementById('qaUpdateIfExists'),
+    addSpec: document.getElementById('qaAddSpec'),
+    specsRows: document.getElementById('qaSpecsRows'),
+    appendBtn: document.getElementById('qaAppendBtn'),
+    resetBtn: document.getElementById('qaResetBtn'),
+  };
+}
+
+function qaComputeSlug(){
+  const q=qaRefs();
+  const m=(q.make?.value||'').trim();
+  const mo=(q.model?.value||'').trim();
+  const y=(q.year?.value||'').trim();
+  return slug(`${m}-${mo}-${y}`);
+}
+
+function qaSyncIdFromFields(){
+  const q=qaRefs();
+  if(!q.id || !q.autoSlug || !q.autoSlug.checked) return;
+  q.id.value = qaComputeSlug();
+  qaUpdateBase();
+}
+
+function qaUpdateBase(){
+  const q=qaRefs();
+  if(q.imgBase && q.id) q.imgBase.textContent = `/assets/images/${q.id.value||'ID'}/`;
+}
+
+function qaAddSpecRow(k='', v=''){
+  const q=qaRefs();
+  if(!q.specsRows) return;
+  const row = document.createElement('div'); row.className='grid grid-cols-2 gap-2';
+  const key = document.createElement('input'); key.className='tag w-full rounded-xl px-3 py-2 bg-transparent monos'; key.placeholder='Key'; key.value=k; key.dataset.role='specKey';
+  const val = document.createElement('input'); val.className='tag w-full rounded-xl px-3 py-2 bg-transparent monos'; val.placeholder='Value'; val.value=v; val.dataset.role='specVal';
+  row.appendChild(key); row.appendChild(val); q.specsRows.appendChild(row);
+}
+
+function qaCollectSpecs(){
+  const q=qaRefs(); const specs={};
+  if(!q.specsRows) return specs;
+  const keys = q.specsRows.querySelectorAll('input[data-role="specKey"]');
+  const vals = q.specsRows.querySelectorAll('input[data-role="specVal"]');
+  keys.forEach((keyInput, idx)=>{
+    const k = keyInput.value.trim(); const v = (vals[idx]?.value||'').trim();
+    if(k) specs[k] = v;
+  });
+  return specs;
+}
+
+function qaBuildImages(id){
+  const q=qaRefs();
+  if(!q) return [];
+  if(q.imgMode?.value==='urls'){
+    const raw = (q.imgURLs?.value||'').replace(/\|/g, '\n');
+    return raw.split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
+  }
+  // filenames mode (default)
+  const files = (q.imgFiles?.value||'').split('|').map(s=>s.trim()).filter(Boolean);
+  return files.map(f=>`/assets/images/${id}/${f}`);
+}
+
+function qaAppend(){
+  const q=qaRefs();
+  if(!q) return;
+  const id = ((q.id?.value)||qaComputeSlug()).trim();
+  if(!id){ alert('ID is required.'); return; }
+
+  const item = {
+    id,
+    make: (q.make?.value||'').trim(),
+    model: (q.model?.value||'').trim(),
+    year: q.year?.value ? parseInt(q.year.value,10) : undefined,
+    type: q.type?.value || 'Solidbody',
+    finish: (q.finish?.value||'').trim(),
+    status: q.status?.value || 'Available',
+    images: qaBuildImages(id),
+    specs: qaCollectSpecs(),
+    blurb: (q.blurb?.value||'').trim(),
+    price: q.price?.value ? Number(q.price.value) : undefined
+  };
+
+  const idx = INVENTORY.findIndex(x=>x.id===id);
+  if(idx>=0){
+    if(q.updateIfExists?.checked){ INVENTORY[idx]=item; alert('Updated item: '+id); }
+    else { alert('ID already exists. Uncheck "Update if ID exists" or change the ID.'); return; }
+  } else {
+    INVENTORY.push(item); alert('Appended item: '+id);
+  }
+  render();
+  const rows = document.getElementById('rows'); if(rows) rows.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function qaReset(){
+  const q=qaRefs();
+  if(!q) return;
+  if(q.make) q.make.value='';
+  if(q.model) q.model.value='';
+  if(q.year) q.year.value='';
+  if(q.type) q.type.value='Solidbody';
+  if(q.finish) q.finish.value='';
+  if(q.status) q.status.value='Available';
+  if(q.blurb) q.blurb.value='';
+  if(q.price) q.price.value='';
+  if(q.id) q.id.value='';
+  if(q.imgMode) q.imgMode.value='filenames';
+  if(q.imgFiles) q.imgFiles.value='1.jpg | 2.jpg | 3.jpg | 4.jpg | 5.jpg | 6.jpg | 7.jpg | 8.jpg';
+  if(q.imgURLs) q.imgURLs.value='';
+  if(q.filenamesWrap) q.filenamesWrap.classList.remove('hidden');
+  if(q.urlsWrap) q.urlsWrap.classList.add('hidden');
+  if(q.specsRows){ q.specsRows.innerHTML=''; qaAddSpecRow('Scale','25.5"'); qaAddSpecRow('Body',''); }
+  qaUpdateBase();
+}
+
+// Seed defaults and listeners
+(function qaInit(){
+  // If this page doesn't have the Quick Add section, bail gracefully.
+  const haveQA = document.getElementById('qaAppendBtn');
+  if(!haveQA) return;
+
+  qaReset();
+  const q=qaRefs();
+
+  q.make?.addEventListener('input', qaSyncIdFromFields);
+  q.model?.addEventListener('input', qaSyncIdFromFields);
+  q.year?.addEventListener('input', qaSyncIdFromFields);
+  q.id?.addEventListener('input', qaUpdateBase);
+
+  q.autoSlug?.addEventListener('change', ()=>{ if(q.autoSlug.checked) qaSyncIdFromFields(); });
+
+  q.imgMode?.addEventListener('change', ()=>{
+    const isURLs = q.imgMode.value==='urls';
+    q.filenamesWrap?.classList.toggle('hidden', isURLs);
+    q.urlsWrap?.classList.toggle('hidden', !isURLs);
+  });
+
+  q.addSpec?.addEventListener('click', (e)=>{ e.preventDefault(); qaAddSpecRow('',''); });
+  q.appendBtn?.addEventListener('click', (e)=>{ e.preventDefault(); qaAppend(); });
+  q.resetBtn?.addEventListener('click', (e)=>{ e.preventDefault(); qaReset(); });
+})();
+
+    
+    // ---------- IO bindings ----------
+    $('#fileInput').addEventListener('change', async (e)=>{
+      const file = e.target.files?.[0]; if(!file) return; const text = await file.text();
+      try{
+        let data;
+        if(file.name.toLowerCase().endsWith('.json')) data = JSON.parse(text);
+        else data = parseCSVToInventory(text);
+        if(!Array.isArray(data)) throw new Error('Parsed data is not an array.');
+        INVENTORY = data; render();
+      }catch(err){ alert('Could not load: '+err.message); }
+      e.target.value='';
+    });
+
+    $('#fetchBtn').addEventListener('click', async ()=>{
+      const url = $('#fetchUrl').value.trim(); if(!url) return;
+      try{
+        const res = await fetch(url, {cache:'no-store'}); const text = await res.text();
+        let data; try { data = JSON.parse(text); } catch { data = parseCSVToInventory(text); }
+        if(!Array.isArray(data)) throw new Error('Response did not contain an array.');
+        INVENTORY = data; render();
+      }catch(err){ alert('Fetch failed: '+err.message); }
+    });
+
+    $('#exportJSON').addEventListener('click', ()=> download(toDownloadJSON(), 'inventory.json', 'application/json'));
+    $('#copyJSON').addEventListener('click', async ()=>{ try { await navigator.clipboard.writeText(toDownloadJSON()); alert('Copied JSON to clipboard.'); } catch { alert('Clipboard copy failed.'); } });
+    $('#saveLocal').addEventListener('click', ()=>{ localStorage.setItem(LS_KEY, toDownloadJSON()); alert('Saved to browser.'); });
+    $('#loadLocal').addEventListener('click', ()=>{ const s = localStorage.getItem(LS_KEY); if(!s) return alert('No browser copy saved.'); try{ INVENTORY = JSON.parse(s); render(); } catch{ alert('Saved copy is corrupted.'); } });
+    $('#clearLocal').addEventListener('click', ()=>{ localStorage.removeItem(LS_KEY); alert('Browser copy cleared.'); });
+    $('#addRow').addEventListener('click', addRow);
+    $('#validateBtn').addEventListener('click', validate);
+
+    // ---------- Boot ----------
+    (function init(){
+      const stored = localStorage.getItem(LS_KEY);
+      if(stored){ try{ INVENTORY = JSON.parse(stored); } catch { INVENTORY = []; } }
+      render();
+    })();
+  </script>
+</body>
+</html>
